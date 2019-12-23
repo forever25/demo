@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="./js/matter.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    var Engine = Matter.Engine,       //引擎支架
+      Render = Matter.Render,         // 创建一个渲染器
+      World = Matter.World,       // 创建一个世界
+      Bodies = Matter.Bodies;     //
+
+    var engine = Engine.create(),   // 创建引擎
+      world = engine.world;
+
+    var render = Render.create({
+      engine: engine,
+      element: document.body
+    });
+
+    Engine.run(engine);
+    Render.run(render);
+    var boxA = Bodies.rectangle(500, 170, 40, 260,{
+      isStatic: false // 规定状态是不是静态的
+    });   // 参数为 x  y  width height 创建一个长方体
+    var ground = Bodies.rectangle(400, 600, 600, 100, {  // 创建一个地板
+      isStatic: true
+    });
+
+    World.add(world, boxA);
+    World.add(world, ground);
+  </script>
+</body>
+
+</html>

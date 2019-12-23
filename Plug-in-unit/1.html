@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Document</title>
+     <script src="http://cdn.bootcss.com/socket.io/1.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.bootcss.com/pubsub-js/1.5.7/pubsub.min.js"></script>
+    <script src="http://zbmate.com/libzb/js/libzb.min.js"></script>
+</head>
+<body>
+    
+
+    <script src="http://lib.sinaapp.com/js/jquery/2.2.4/jquery-2.2.4.min.js"></script>
+    <video id="msgaudio" controls="" name="msgaudio" style="display: none" type="audio/mp3" paused="">
+        <script>
+          window.channel = 'mock';
+          window.roomid = 'mock';
+        </script>
+        <script type="text/javascript">
+            var config = {
+                filter_price: 1, //价格过滤
+                highlight_price: 100, //置顶价格
+                lefticon_type: 2, //1:头像，2:礼物图标
+                lines: 10, //显示行数
+                days: 1 // 保存天数
+            };
+
+
+            PubSub.subscribe("dgb", function (msg, data) {
+                console.log(data);
+                console.log(data.nn+'送了'+data.gift.name+'X'+data.gfcnt);               
+            });
+            zbmate.connect();
+        </script>
+    </video>
+</body>
+</html>

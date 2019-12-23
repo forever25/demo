@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .roleStyle {
+            position: absolute;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            color: #fafafa;
+            text-shadow: 0 0 6px #000, 0 0 1px #000;
+            font-weight: bold;
+            text-align: center;
+            font-size: 30px;
+            z-index: 9999;
+        }
+
+        .userWrap {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .userBg {
+            position: absolute;
+            top: calc(50% - 200px);
+            left: calc(50% - 110px);
+            width: 220px;
+            height: 280px;
+            border-radius: 50%;
+            background: url(https://forever25.github.io/matter/image/userbg.jpg) no-repeat 48% 4%;
+            box-shadow: 0 0 40px 20px #fff;
+            opacity: 0;
+        }
+
+        .username {
+            position: absolute;
+            left: 50%;
+            top: 90%;
+            transform: translate(-50%, -50%);
+            color: #fafafa;
+            text-shadow: 0 0 6px #000, 0 0 1px #000;
+            font-weight: bold;
+        }
+
+        .fadeInAnimation {
+            animation: mymove 3s;
+            /* animation: mymove <%=tks_time %> s; */
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes mymove {
+            0% {
+                opacity: 0;
+                transform: translate(-200px, 200px);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        @-moz-keyframes mymove
+
+        /* Firefox */
+            {
+            0% {
+                opacity: 0;
+                transform: translate(-200px, 200px);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        @-webkit-keyframes mymove
+
+        /* Safari 和 Chrome */
+            {
+            0% {
+                opacity: 0;
+                transform: translate(-200px, 200px);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        @-o-keyframes mymove
+
+        /* Opera */
+            {
+            0% {
+                opacity: 0;
+                transform: translate(-200px, 200px);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+    </style>
+    <script src="https://lib.sinaapp.com/js/jquery/2.2.4/jquery-2.2.4.min.js"></script>
+    <script src="https://forever25.github.io/matter/js/matter.js"></script>
+    <script src="http://cdn.bootcss.com/socket.io/1.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.bootcss.com/pubsub-js/1.5.7/pubsub.min.js"></script>
+    <script src="http://zbmate.com/libzb/js/libzb.min.js"></script>
+</head>
+
+<body>
+    <video id="msgaudio" controls="" name="msgaudio" style="display: none" type="audio/mp3" paused="">
+        <script>
+          window.channel = 'mock';
+          window.roomid = 'mock';
+        </script>
+        <script>
+            var Engine = Matter.Engine,
+                Render = Matter.Render,
+                World = Matter.World,
+                Bodies = Matter.Bodies,
+                Composites = Matter.Composites,
+                Composite = Matter.Composite,
+                Body = Matter.Body,
+                Constraint = Matter.Constraint,
+                MouseConstraint = Matter.MouseConstraint,
+                Common = Matter.Common,
+                Events = Matter.Events;
+
+            // 创建引擎
+            var engine = Engine.create();
+
+            // 创建渲染器
+            var render = Render.create({
+                element: document.body,
+                engine: engine,
+                options: {
+                    wireframes: false,
+                    width: 400,
+                    height: 750,
+                    background: 'https://forever25.github.io/matter/image/bg.png',
+                },
+            });
+
+            //绘制墙壁
+            var offset = 7;
+            var leftWall1 = Bodies.rectangle(offset, 12, 14, 750, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-rl.png',
+                    },
+                },
+            });
+
+            var leftWall2 = Bodies.rectangle(offset, 658, 14, 750, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-rl.png',
+                    },
+                },
+            });
+
+            var rightWall1 = Bodies.rectangle(393, 12, 14, 750, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-rl.png',
+                    },
+                },
+            });
+
+            var rightWall2 = Bodies.rectangle(393, 658, 14, 750, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-rl.png',
+                    },
+                },
+            });
+
+            var bottomWall1 = Bodies.rectangle(12, 744, 400, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-b.png',
+                    },
+                },
+            });
+
+            var bottomWall3 = Bodies.rectangle(200, 744, 400, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-b.png',
+                    },
+                },
+            });
+
+            var bottomWall4 = Bodies.rectangle(300, 744, 600, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-b.png',
+                    },
+                },
+            });
+            var bottomWall5 = Bodies.rectangle(300, 744, 600, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-b.png',
+                    },
+                },
+            });
+
+            var bottomWall2 = Bodies.rectangle(320, 744, 400, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-b.png',
+                    },
+                },
+            });
+
+            var topLeftWall = Bodies.rectangle(60, 6, 120, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-t-l.png',
+                    },
+                },
+            });
+
+            var topRightWall = Bodies.rectangle(340, 6, 120, 12, {
+                isStatic: true,
+                render: {
+                    sprite: {
+                        texture: 'https://forever25.github.io/matter/image/b-t-r.png',
+                    },
+                },
+            });
+
+            // 生成Will,放入世界
+            World.add(engine.world, [
+                leftWall1,
+                leftWall2,
+                rightWall1,
+                rightWall2,
+                bottomWall3,
+                bottomWall4,
+                bottomWall5,
+                bottomWall1,
+                bottomWall2,
+                topLeftWall,
+                topRightWall,
+            ]);
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // var g_price = <%= price %> ; //价格过滤点
+            // var g_gift_max = <%= gift_max %> ; //礼物一次性最多可以投的量，默认为20，最大为100
+            // var g_full_number = <%= full_num %> ; //满框礼物数量，最大5000，最小100，默认200
+            // var g_name_size = <%= name_size %> ; //粉丝名字颜色最小值10，最大值100，默认值25
+            // var g_name_color = '<%= name_color %>'; //粉丝名字颜色，默认值白色
+            // var g_tks_word = '<%= tks_word %>'; //感谢词 最大长度不超过50
+            // var g_tks_size = '<%= tks_size %>'; //感谢文字大小 默认30
+            // var g_tks_color = '<%= tks_color% >'; //感谢文字颜色
+            // var g_tks_stroke = '#f0bd32';
+            // var gift_num = 1;
+            var g_gift_queue=[];  //礼物队列
+            var g_role_gfcnt_key;
+            var g_role_gfcnt = new Object();
+            var g_role_gfcnt_backups = {};
+
+            var g_price = 0.1; //价格过滤点
+            var g_gift_max = 20; //礼物一次性最多可以投的量，默认为20，最大为100
+            var g_full_number = 300; //满框礼物数量，最大5000，最小100，默认200
+            var g_name_size = 30; //粉丝名字颜色最小值10，最大值100，默认值30
+            var g_name_color = '#ffffff'; //粉丝名字颜色，默认值白色
+            var g_tks_word = 'THANK YOU'; //感谢词 最大长度不超过50
+            var g_tks_size = '30'; //感谢文字大小 默认30
+            var g_tks_color = '#fafafa'; //感谢文字颜色
+            var g_tks_stroke = '#f0bd32';
+            var tf_name = '骨灰拌饭'; //粉丝名
+            var g_gift_sum = 1;
+
+
+            // 处理数据
+
+            function dropgift(src, info) {
+                function addEnd() {
+                    g_gift_sum += info.num;
+                }
+                Events.off(engine.world);
+                Events.on(engine.world, 'afterAdd', addEnd);
+
+                var image = new Image();
+                image.src = src;
+                image.onload = function (res) {
+                    var scale = res.path[0].width / info.w;
+                    var w = info.w;
+                    var h = res.path[0].height / scale;
+
+                    var scaleX = (w / res.path[0].width);
+                    var scaleY = (h / res.path[0].height);
+                    w = info.w * 0.9;
+                    h = res.path[0].height / scale * 0.9;
+                    var n = 0;
+
+                    for(var i=0;i<info.num;i++){
+                        var x = Math.floor(
+                            Math.random() * (240 - 140 + 1) + 140,
+                        );
+                        var obj = gengift({
+                            x,
+                            w,
+                            h,
+                            scaleX,
+                            scaleY,
+                            src
+                        });
+                        console.log(obj);
+                        g_gift_queue.push(obj);
+                    }
+                };
+            }
+
+            function ergodicGiftQueue(){
+                g_gift_queue.forEach((gift,index)=>{
+                    (function(i){
+                        setTimeout(() => {
+                            World.add(engine.world, gift);
+                            g_gift_queue.splice(i,1);
+                        },100);
+                    })(index);
+                })
+            }
+
+            // 生成礼物
+            function gengift(config) {
+                var {
+                    x,
+                    w,
+                    h,
+                    src,
+                    scaleX,
+                    scaleY
+                } = config;
+                var username = createText({
+                    x,
+                    w,
+                    h,
+                    text: tf_name,
+                });
+
+                var collisionGroup = -username.id;
+                var option = {
+                    render: {
+                        sprite: {
+                            texture: src,
+                            xScale: scaleX,
+                            yScale: scaleY,
+                        },
+                    },
+                    collisionFilter: {
+                        group: 0,
+                    },
+                };
+
+                var boall = Bodies.rectangle(x, -200, w, h, option);
+
+                return boall;
+            }
+            // 生成文字
+            function mainText(info) {
+                var {
+                    size,
+                    text,
+                    color,
+                    strokColor
+                } = info;
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                var username = text;
+                var fontSize = size;
+                canvas.height = fontSize;
+                canvas.width = (fontSize - 10) * username.length + 10;
+
+                ctx.lineWidth = 5;
+                ctx.font = fontSize - 10 + 'px Forte';
+                ctx.textBaseline = 'top';
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = strokColor || '#f0bd32';
+                ctx.strokeStyle = strokColor || '#f0bd32';
+                ctx.strokeText(username, 5, 10);
+
+                ctx.font = fontSize - 10 + 'px Forte';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = color;
+                ctx.fillText(username, 5, 10);
+
+                return canvas;
+            }
+
+            // 创建文字
+
+            function createText(sizeInfo) {
+                var {
+                    x,
+                    h,
+                    text
+                } = sizeInfo;
+                var canvas = mainText({
+                    text,
+                    size: g_name_size,
+                    color: g_name_color,
+                });
+                render.textures['customText'] = canvas;
+                var nameBodies = Bodies.rectangle(
+                    x,
+                    -210 - h / 2,
+                    canvas.width,
+                    canvas.height, {
+                        render: {
+                            sprite: {
+                                texture: 'customText',
+                            },
+                        },
+                    },
+                );
+
+                nameBodies = Body.create({
+                    parts: [nameBodies],
+                    collisionFilter: {
+                        category: 0x0001,
+                        mask: 0x0002,
+                    },
+                });
+
+                return nameBodies;
+            }
+
+            // 生成dom结构
+            var canvasEl = render.canvas;
+            var divWrap = document.createElement('div');
+            var thankWrap = document.createElement('canvas');
+            var thankCtx = thankWrap.getContext('2d');
+            var userWrap = document.createElement('div');
+            var userBg = document.createElement('div');
+
+            divWrap.style.position = 'relative';
+
+            $(thankWrap).addClass('roleStyle');
+            $(userBg).addClass('userBg');
+            $(userWrap).addClass('userWrap');
+
+            thankWrap.width = canvasEl.width;
+            thankWrap.height = canvasEl.height;
+            userWrap.style.width = canvasEl.width + 'px';
+            userWrap.style.height = canvasEl.height + 'px';
+
+            $(userBg).html(function () {
+                return `<div class="username"></div>`;
+            });
+            userWrap.appendChild(userBg);
+            divWrap.appendChild(thankWrap);
+            divWrap.appendChild(canvasEl);
+            divWrap.appendChild(userWrap);
+
+            document.body.appendChild(divWrap);
+
+            function drawText(textInfo){
+                var thankText = mainText({
+                    size: g_tks_size,
+                    text: textInfo.thank_word,
+                    color: g_tks_color,
+                    strokColor: g_tks_stroke,
+                });
+                thankCtx.drawImage(
+                    thankText,
+                    (thankWrap.width / 2 - thankText.width / 4) ,
+                    (thankWrap.height - thankText.height) / 2,
+                );
+
+                $('.userBg .username').html(textInfo.fins_name);
+            }
+
+            // 添加礼物到world
+            function sendgift(option) {
+                var g_gift_num = option.gfcnt;
+                if (g_gift_num > g_gift_max) {
+                    g_gift_num = g_gift_max;
+                }
+
+                if (option.price < g_price) {
+                    return;
+                }
+
+                if (option.price >= 100) {
+                    dropgift(option.imageSrc, {
+                        w: 50,
+                        num: g_gift_num,
+                    });
+                } else if (option.price >= 50) {
+                    dropgift(option.imageSrc, {
+                        w: 40,
+                        num: g_gift_num,
+                    });
+                } else if (option.price >= g_price) {
+                    dropgift(option.imageSrc, {
+                        w: 30,
+                        num: g_gift_num,
+                    });
+                }
+
+
+                if (g_gift_sum >= g_full_number) {
+                    g_gift_sum = 0;
+                    g_role_gfcnt_backups = g_role_gfcnt;
+                    sortObj()
+                    getTopFive(g_role_gfcnt_key, 5)
+                    World.clear(engine.world, true);
+                }
+            }
+
+            // 记录用户的price
+
+            function numOfRec(info) {
+                if ((JSON.stringify(g_role_gfcnt)=="{}")) {
+                    return g_role_gfcnt[info.name] = {
+                        num: info.num,
+                        ic: info.ic
+                    };
+                } else {
+                    for (var i in g_role_gfcnt) {
+                        if (i == info.name) {
+                            return (g_role_gfcnt[info.name].num += info.num);
+                        } else {
+                            return (g_role_gfcnt[info.name] = {
+                                num: info.num,
+                                ic: info.ic
+                            });
+                        }
+                    }
+                }
+            }
+
+            // 排序
+
+            function sortObj() {
+                g_role_gfcnt_key = Object.keys(g_role_gfcnt).sort((a, b) => {
+                    return g_role_gfcnt[b].num - g_role_gfcnt[a].num;
+                });
+
+            }
+
+
+            // 显示Top 5
+            function getTopFive(g_role_gfcnt_key, n) {
+                if (n < 1) {
+                    return;
+                }
+
+                $(thankWrap).addClass('fadeInAnimation');
+                $(userBg).addClass('fadeInAnimation');
+
+
+                $(userBg).css{
+                    'background-image',`url(${g_role_gfcnt_backups[]})`
+                }
+
+                var index = Math.abs(n - 5);
+
+                drawText({
+                        thank_word : g_tks_word,
+                        fins_name : g_role_gfcnt_key[index]
+                });
+
+
+
+                userBg.addEventListener('animationend', function () {
+                    $(thankWrap).removeClass('fadeInAnimation');
+                    $(userBg).removeClass('fadeInAnimation');
+                    n--;
+                    setTimeout(() => {
+                        return getTopFive(g_role_gfcnt_key, n);
+                    }, 100);
+
+                });
+            }
+
+            Engine.run(engine);
+            Render.run(render);
+
+            PubSub.subscribe("dgb", function( msg, data ){
+                console.log(data);
+                var option = {
+                    imageSrc: data.gift.icon,
+                    price: data.gift.price,
+                    gfcnt: data.gfcnt,
+                };
+                var info = {
+                    name: data.nn,
+                    ic: data.ic,
+                    num: data.gift.price
+                }
+                sendgift(option);
+                numOfRec(info);
+                ergodicGiftQueue();
+            });
+
+            zbmate.connect();
+
+
+        </script>
+    </video>
+</body>
+
+</html>

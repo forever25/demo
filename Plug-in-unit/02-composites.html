@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="./js/matter.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // Matter.Composites.stack = function(xx, yy, columns, rows, columnGap, rowGap, callback) {
+    // 参数列表 xx yy 是堆栈的第一个的坐标点 columns 列数 rows 行 columnsGap 列间隙 rowGap 行间隙
+    //     var stack = Composite.create({ label: 'Stack' }),
+    //         x = xx,       //
+    //         y = yy,
+    //         lastBody,
+            // i = 0;
+
+    //     for (var row = 0; row < rows; row++) {
+    //         var maxHeight = 0;
+
+    //         for (var column = 0; column < columns; column++) {
+    //             var body = callback(x, y, column, row, lastBody, i);
+
+    //             if (body) {
+    //                 var bodyHeight = body.bounds.max.y - body.bounds.min.y,
+    //                     bodyWidth = body.bounds.max.x - body.bounds.min.x;
+
+    //                 if (bodyHeight > maxHeight)
+    //                     maxHeight = bodyHeight;
+
+    //                 Body.translate(body, { x: bodyWidth * 0.5, y: bodyHeight * 0.5 });
+
+    //                 x = body.bounds.max.x + columnGap;
+
+    //                 Composite.addBody(stack, body);
+
+    //                 lastBody = body;
+    //                 i += 1;
+    //             } else {
+    //                 x += columnGap;
+    //             }
+    //         }
+
+    //         y += maxHeight + rowGap;
+    //         x = xx;
+    //     }
+
+    //     return stack;
+    // };
+
+    var Engine = Matter.Engine,
+      Render = Matter.Render,
+      World = Matter.World,
+      Composites = Matter.Composites,
+      Bodies = Matter.Bodies;
+
+    var engine = Engine.create(),
+      world = engine.world;
+
+    var render = Render.create({
+      engine: engine,
+      element: document.body,
+      options: {width: 800, height: 800}
+
+    });
+    Render.run(render);
+    Engine.run(engine);
+
+    var stack = Composites.stack(250, 100, 6, 3, 0, 0, function (x, y) {
+      return Bodies.rectangle(x, y, 80, 20);
+    });
+
+    var ground = Bodies.rectangle(500, 800, 1000, 100, {
+      isStatic: true
+    });   //
+
+    World.add(world, [stack, ground]);
+  </script>
+</body>
+
+</html>

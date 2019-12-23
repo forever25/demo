@@ -1,0 +1,11 @@
+div,html,body,h1,h2,h3,p,img,a,ul,li,ol,span,i,
+header,section,footer,aside,article,nav,form{
+    margin: 0;
+    padding: 0;
+}
+img{
+    border: none;
+    vertical-align: top;
+}
+a{text-decoration: none;}
+ul,li,ol{list-style:none;}
