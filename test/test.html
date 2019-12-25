@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<style>
+		#root {
+			width: 500px;
+			display: flex;
+			flex-wrap: wrap;
+			border-left: 2px solid #000;
+			border-top: 2px solid #000;
+		}
+
+		#root div {
+			width: 50px;
+			height: 50px;
+			border-bottom: 1px solid #000;
+			border-right: 1px solid #000;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="root">
+
+	</div>
+</body>
+<script>
+	// 生成一个空数组 9*9
+
+	function generateArr() {
+		var arr = [];
+		for (var i = 0; i < 9; i++) {
+			arr[i] = [];
+			for (var j = 0; j < 9; j++) {
+				arr[i][j] = 0;
+			}
+		}
+		return arr;
+	}
+
+	/**
+	 * 获取n-m的随机整数
+	 * @param {} n
+	 * @param {} m
+	 * @return {}
+	 */
+	function random(n, m) {
+		var c = m - n + 1;
+		return Math.floor(Math.random() * c + n);
+	}
+
+	/**
+	 * 检测行是否符合标准
+	 * @param {} arr
+	 * @param {} row
+	 * @return {Boolean}
+	 */
+	function checkRow(arr, row) {
+		for (var j = 0; j < 8; j++) {
+			if (arr[row][j] == 0) {
+				continue;
+			}
+			for (var k = j + 1; k < 9; k++) {
+				if (arr[row][j] == arr[row][k]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 检测列是否符合标准
+	 * @param {} arr
+	 * @param {} col
+	 * @return {Boolean}
+	 */
+	function checkLine(arr, col) {
+		for (var j = 0; j < 8; j++) {
+			if (arr[j][col] == 0) {
+				continue;
+			}
+			for (var k = j + 1; k < 9; k++) {
+				if (arr[j][col] == arr[k][col]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 检测3X3是否符合标准
+	 * @param {} arr
+	 * @param {} row
+	 * @param {} col
+	 * @return {Boolean}
+	 */
+	function checkNine(arr, row, col) {
+		// 获得左上角的坐标
+		var j = Math.floor(row / 3) * 3;
+		var k = Math.floor(col / 3) * 3;
+		// 循环比较
+		for (var i = 0; i < 8; i++) {
+			if (arr[j + Math.floor(i / 3)][k + i % 3] == 0) {
+				continue;
+			}
+			for (var m = i + 1; m < 9; m++) {
+				if (arr[j + Math.floor(i / 3)][k + Math.round(i % 3)] == arr[j + Math.floor(m / 3)][k + Math.round(m % 3)]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 检查对角线是否符合标准(左上->右下)
+	 * @param {} arr
+	 * @param {} row
+	 * @param {} col
+	 */
+	function checkDiagonalLeftToRight(arr, row, col) {
+		if (row != col) {
+			return true;
+		}
+		for (var i = 0; i < 8; i++) {
+			if (i == row) {
+				continue;
+			}
+			if (arr[i][i] == arr[row][col]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 检查对角线是否符合标准(右上->左下)
+	 * @param {} arr
+	 * @param {} row
+	 * @param {} col
+	 */
+	function checkDiagonalRightToLeft(arr, row, col) {
+		if ((row + col) != 8) {
+			return true;
+		}
+		for (var i = 0; i < 8; i++) {
+			if (i == row) {
+				continue;
+			}
+			if (arr[i][8 - i] == arr[row][col]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 是否满足行、列和3X3区域不重复的要求
+	 * @param {} arr
+	 * @param {} row
+	 * @param {} col
+	 * @return {}
+	 */
+	function isCorret(arr, row, col) {
+		return (checkRow(arr, row) && checkLine(arr, col) && checkNine(arr, row, col));
+	}
+
+	/**
+	 * 生成1-9的随机整数
+	 * @return {}
+	 */
+	function generateRandom() {
+		return Math.floor(Math.random() * 9 + 1);
+	}
+
+	function generateShuDu() {
+		var arr = generateArr();
+		for (var i = 0; i < 9; i++) {
+			var time = 0;
+			for (var j = 0; j < 9; j++) {
+				arr[i][j] = time == 9 ? 0 : generateRandom();
+				if (arr[i][j] == 0) { // 不是第一列，则倒退一列
+					if (j > 0) {
+						j -= 2;
+						continue;
+					} else { // 是第一列，则倒退到上一行的最后一列
+						i--;
+						j = 8;
+						continue;
+					}
+				}
+				if (isCorret(arr, i, j)) {
+					time = 0; // 初始化time，为下一次填充做准备
+				} else {
+					time++; // 次数增加1
+					j--; // 继续填充当前格
+				}
+			}
+		}
+		return arr;
+	}
+
+
+	function createDom(arr) {
+		let domArr = [];
+		for (let i in arr) {
+			for (let j in arr[i]) {
+				let div = document.createElement('div'); // 创建div
+				div.innerText = arr[i][j];
+				if (i == 2 || i == 5 || i == 8) {
+					div.style.borderBottom = '2px solid #000'
+				}
+				if (j == 2 || j == 5 || j == 8) {
+					div.style.borderRight = '2px solid #000'
+				}
+				domArr.push(div);
+			}
+		}
+
+
+
+		return domArr;
+	}
+
+
+
+
+	(() => {
+		let result = generateShuDu(),
+			root = document.getElementById('root'),
+			divDom = createDom(result);
+
+		for (let index = 0; index < divDom.length; index++) {
+			const element = divDom[index];
+			root.appendChild(element);
+		}
+	})();
+</script>
+
+</html>
